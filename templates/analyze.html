@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSVInsight - Analysis for {{ filename }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analysis for: {{ filename }}</h1>
+            <a href="{{ url_for('index') }}" class="button back-button">Upload New File</a>
+        </header>
+
+        <section class="data-section">
+    <h2>First 5 Rows of Data</h2>
+    <div class="table-container">
+        {{ head_data | safe }} </div>
+</section>
+
+<section class="data-section">
+    <h2>Descriptive Statistics</h2>
+    <div class="table-container">
+        {{ desc_data | safe }} </div>
+</section>
+
+        <section class="plot-section">
+            <h2>Generate Interactive Plot</h2>
+            <form method="POST" class="plot-form">
+                <div class="form-group">
+                    <label for="plot_type">Plot Type:</label>
+                    <select id="plot_type" name="plot_type" onchange="updateColumnOptions()">
+                        <option value="">-- Select Plot Type --</option>
+                        <option value="scatter">Scatter Plot</option>
+                        <option value="bar">Bar Chart</option>
+                        <option value="line">Line Plot</option>
+                        <option value="histogram">Histogram</option>
+                        <option value="box_plot">Box Plot</option>
+                        <option value="pie_chart">Pie Chart</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="x-axis-group">
+                    <label for="x_column">X-axis / Category Column:</label>
+                    <select id="x_column" name="x_column">
+                        <option value="None">-- Select X/Category --</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group" id="y-axis-group">
+                    <label for="y_column">Y-axis / Value Column:</label>
+                    <select id="y_column" name="y_column">
+                        <option value="None">-- Select Y/Value --</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group" id="color-group">
+                    <label for="color_column">Color By (Optional):</label>
+                    <select id="color_column" name="color_column">
+                        <option value="None">-- Select Column (Optional) --</option>
+                        {% for col in columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit">Generate Plot</button>
+            </form>
+
+            {% if plot_error %}
+            <p class="error-message">{{ plot_error }}</p>
+            {% endif %}
+
+            {% if plot_html %}
+            <div class="plot-container">
+                {{ plot_html | safe }}
+            </div>
+            {% endif %}
+        </section>
+    </div>
+
+    <script>
+        // Simple JavaScript to dynamically update column options based on plot type
+        function updateColumnOptions() {
+            const plotType = document.getElementById('plot_type').value;
+            const xColumnSelect = document.getElementById('x_column');
+            const yColumnSelect = document.getElementById('y_column');
+            const colorColumnSelect = document.getElementById('color_column');
+
+            // Reset selections
+            xColumnSelect.value = 'None';
+            yColumnSelect.value = 'None';
+            colorColumnSelect.value = 'None';
+
+            // Reset options (might want to pre-filter on server side for better control)
+            // For this basic client-side JS, we'll just hint at what's expected.
+
+            // Adjust labels/hints based on plot type
+            const xLabel = document.querySelector('#x-axis-group label');
+            const yLabel = document.querySelector('#y-axis-group label');
+
+            if (plotType === 'histogram') {
+                xLabel.textContent = 'Numerical Column (for Histogram):';
+                yLabel.textContent = 'No Y-axis needed for Histogram.';
+                yColumnSelect.disabled = true; // Disable Y for histogram
+            } else if (plotType === 'box_plot') {
+                xLabel.textContent = 'Category Column (Optional X):';
+                yLabel.textContent = 'Numerical Column (for Box Plot Y):';
+                yColumnSelect.disabled = false;
+            } else if (plotType === 'pie_chart') {
+                xLabel.textContent = 'Categorical Column (for Names):';
+                yLabel.textContent = 'Numerical Column (for Values):';
+                yColumnSelect.disabled = false;
+            } else { // Scatter, Bar, Line
+                xLabel.textContent = 'X-axis Column:';
+                yLabel.textContent = 'Y-axis Column:';
+                yColumnSelect.disabled = false;
+            }
+
+            // You could further refine this by populating options with numerical_columns / categorical_columns
+            // passed from Flask, but that adds more complexity to this JS.
+            // For a hackathon, visual hints and server-side validation are sufficient.
+        }
+
+        // Call on page load to set initial state
+        document.addEventListener('DOMContentLoaded', updateColumnOptions);
+    </script>
+</body>
+</html>

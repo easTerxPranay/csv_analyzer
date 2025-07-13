@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSVInsight - Upload Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section">
+            <h1>Welcome to CSVInsight!</h1>
+            <p>Upload your CSV file to get instant statistics and interactive visualizations.</p>
+            
+            <form method="POST" enctype="multipart/form-data" class="upload-form">
+                <label for="csv_file" class="upload-label">
+                    Choose CSV File
+                </label>
+                <input type="file" name="csv_file" id="csv_file" accept=".csv" required onchange="displayFileName(this)">
+                
+                <span id="file-name" class="upload-filename">No file chosen</span>
+                
+                <button type="submit">Upload & Analyze</button>
+            </form>
+            
+            {% if error %}
+                <p class="error-message">{{ error }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function displayFileName(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            if (input.files.length > 0) {
+                fileNameSpan.textContent = input.files[0].name;
+            } else {
+                fileNameSpan.textContent = 'No file chosen';
+            }
+        }
+    </script>
+</body>
+</html>

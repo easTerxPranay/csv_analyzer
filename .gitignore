@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.Python
+.env
+venv/
+env/
+*.log
+*.pot
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+
+# IDEs
+.idea/
+.vscode/
+
+# Uploads 
+uploads/
