@@ -1,5 +1,4 @@
-Flask==3.0.3
-pandas==2.1.4 
+streamlit==1.36.0
+pandas==2.0.3  
+numpy==1.24.4  
 plotly==5.22.0
-gunicorn==22.0.0
-numpy==1.26.4
